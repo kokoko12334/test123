@@ -1,0 +1,56 @@
+server:
+  port: 8881
+
+spring:
+  application:
+    name: selfit
+
+  datasource:
+    driver-class-name: org.mariadb.jdbc.Driver
+    url: jdbc:mariadb://34.47.102.46:3306/selfit?characterEncoding=UTF-8
+    username: kosta
+    password: hr7292
+  #oracle database
+  #  datasource:
+  #    driver-class-name: oracle.jdbc.OracleDriver
+  #    url: jdbc:oracle:thin:@127.0.0.1:1521/xe
+  #    username: hr
+  #    password: hr
+
+
+  jpa:
+    open-in-view: false
+    generate-ddl: true
+    show-sql: true
+    hibernate:
+      ddl-auto: create
+    properties:
+      hibernate:
+        show_sql: true
+        format_sql: true
+
+  #Model Location
+mybatis:
+  #  type-aliases-package: com.oopsw.asimple.dao
+  mapper-locations: classpath:mappers/*.xml
+
+  thymeleaf:
+    prefix: classpath:/templates/
+    suffix: .html
+    cache: false
+    check-template-location: true
+
+#  security:
+#    oauth2:
+#      client:
+#        registration:
+#          google:
+#            client-id: 1063644905699-fvf909nphpb5h4c52b8hp7diuq0fciee.apps.googleusercontent.com
+#            client-secret: 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
+#            scope:
+#              - profile
+#              - email
+
+
+
+#
