@@ -46,21 +46,5 @@ public class User {
 		}
 	}
 
-	// Getter 메서드
-	public String getName() {
-		return name;
-	}
-
-	public int getAge() {
-		return age;
-	}
-
-	public String getEmail() {
-		return email;
-	}
-
-	public String getPhone() {
-		return phone;
-	}
 }
 
