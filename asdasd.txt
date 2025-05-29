@@ -1,0 +1,184 @@
+package com.oopsw.espringboot.controller;
+
+import com.oopsw.espringboot.domain.Member;
+import com.oopsw.espringboot.dto.AddMemberDTO;
+import com.oopsw.espringboot.dto.SearchMemberDTO;
+import com.oopsw.espringboot.dto.UpdateMemberDTO;
+import com.oopsw.espringboot.service.MemberService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RequiredArgsConstructor
+@RestController
+public class MemberController {
+
+    private final MemberService memberService;
+
+    @GetMapping("members")
+    public ResponseEntity<List<SearchMemberDTO>> getAllMembers() {
+        return ResponseEntity.status(200)
+                .body(memberService.getAllMembers());
+    }
+
+    @PostMapping("member")
+    public ResponseEntity<String> addMember(@RequestBody AddMemberDTO addMemberDTO) {
+        try {
+            memberService.addMember(addMemberDTO);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(400)
+                    .body("가입 실패");
+        }
+        return ResponseEntity.status(200)
+                .body("가입 성공");
+    }
+
+    @PutMapping("member")
+    public ResponseEntity<String> updateMember(@RequestBody UpdateMemberDTO updateMemberDTO) {
+        try {
+            memberService.updateName(updateMemberDTO.getId(), updateMemberDTO.getName());
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(400)
+                    .body("수정 실패");
+        }
+        return ResponseEntity.status(200)
+                .body("수정 성공");
+    }
+
+    @DeleteMapping("member")
+    public ResponseEntity<String> deleteMember(@RequestBody int id) {
+        try {
+            memberService.deleteMember(Long.valueOf(id));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(400)
+                    .body("삭제 실패");
+        }
+        return ResponseEntity.status(200)
+                .body("삭제 성공");
+    }
+}
+
+
+
+
+
+
+
+package com.oopsw.espringboot.service;
+
+import com.oopsw.espringboot.domain.Member;
+import com.oopsw.espringboot.dto.AddMemberDTO;
+import com.oopsw.espringboot.dto.SearchMemberDTO;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.test.context.SpringBootTest;
+
+import java.util.List;
+
+@SpringBootTest
+public class MemberServiceTest {
+
+    @Autowired
+    private MemberService memberService;
+
+    @Test
+    public void addMember() {
+        memberService.addMember(AddMemberDTO.builder().name("세종대왕").build());
+    }
+
+    @Test
+    public void updateMember() {
+        memberService.updateName(8L, "고민");
+    }
+
+    @Test
+    public void deleteMember() {
+        memberService.deleteMember(9L);
+    }
+
+    @Test
+    public void getAllMembers() {
+        List<SearchMemberDTO> members = memberService.getAllMembers();
+        members.forEach(System.out::println);
+
+    }
+
+}
+
+
+
+
+
+
+package com.oopsw.espringboot.service;
+
+import com.oopsw.espringboot.domain.Member;
+import com.oopsw.espringboot.dto.AddMemberDTO;
+import com.oopsw.espringboot.dto.SearchMemberDTO;
+import com.oopsw.espringboot.dto.UpdateMemberDTO;
+import com.oopsw.espringboot.repository.MemberRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
+@RequiredArgsConstructor
+@Service
+public class MemberService {
+
+    private final MemberRepository memberRepository;
+
+    // 등록
+    public Long addMember(AddMemberDTO dto) {
+        Member member = Member.builder()
+                .name(dto.getName())
+                .build();
+        Member member2 = memberRepository.save(member);
+        return  member2.getId();
+    }
+
+    public Long addMember(String name) {
+        return addMember(AddMemberDTO.builder().name(name).build());
+    }
+
+    public void updateName(Long findId, String updateName) {
+        Optional<Member> m = memberRepository.findById(findId);
+        Member member = m.get();
+        member.updateName(updateName);
+        memberRepository.save(member);
+    }
+
+    // 삭제
+    public void deleteMember(Long id) {
+        memberRepository.deleteById(id);
+    }
+
+    // 리스트
+    public List<SearchMemberDTO> getAllMembers() {
+        List<SearchMemberDTO> members = new ArrayList<>();
+        for (Member member : memberRepository.findAll()) {
+            members.add(SearchMemberDTO.builder()
+                    .id(member.getId())
+                    .name(member.getName())
+                    .createdDate(member.getCreatedDate())
+                    .build());
+        }
+        return members;
+    }
+
+
+
+
+}
+
+
+
+
